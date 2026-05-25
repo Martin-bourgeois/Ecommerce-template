@@ -1,7 +1,7 @@
 <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-semibold text-gray-900">Filtres</h3>
-        @if(!empty($categories) || $price_min || $price_max || $rating || $availability !== 'all' || !empty($attributes))
+        @if(!empty($categories) || $price_min || $price_max || $rating || $availability !== 'all' || !empty($selectedAttributes))
             <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-700">
                 Réinitialiser
             </button>
@@ -98,7 +98,7 @@
                         <input
                             type="checkbox"
                             wire:click="toggleAttribute('{{ $attribute['slug'] }}', '{{ $option['value'] }}')"
-                            @checked(in_array($option['value'], $attributes[$attribute['slug']] ?? []))
+                            @checked(in_array($option['value'], $selectedAttributes[$attribute['slug']] ?? []))
                             class="rounded border-gray-300"
                         />
                         <span class="ml-2 text-sm text-gray-700">{{ $option['label'] }}</span>

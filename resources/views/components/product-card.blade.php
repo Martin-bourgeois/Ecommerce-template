@@ -67,8 +67,8 @@
         </div>
 
         <!-- Add to Cart Button -->
-        <button wire:click="addToCart({{ $product->id }})" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors text-sm font-semibold">
-            Ajouter au panier
-        </button>
+        <div class="w-full">
+            @livewire('product.quick-add-to-cart', ['productId' => $product->id], key('quick-add-' . $product->id))
+        </div>
     </div>
 </div>

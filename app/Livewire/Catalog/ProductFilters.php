@@ -28,7 +28,7 @@ class ProductFilters extends Component
     public string $availability = 'all';
 
     #[Url(history: true)]
-    public array $attributes = [];
+    public array $selectedAttributes = [];
 
     public array $filterOptions = [];
     public int $resultCount = 0;
@@ -89,26 +89,26 @@ class ProductFilters extends Component
         $this->price_max = null;
         $this->rating = null;
         $this->availability = 'all';
-        $this->attributes = [];
+        $this->selectedAttributes = [];
 
         $this->dispatch('filters-updated', filters: []);
     }
 
     public function toggleAttribute(string $attributeSlug, string $optionValue): void
     {
-        if (!isset($this->attributes[$attributeSlug])) {
-            $this->attributes[$attributeSlug] = [];
+        if (!isset($this->selectedAttributes[$attributeSlug])) {
+            $this->selectedAttributes[$attributeSlug] = [];
         }
 
-        $key = array_search($optionValue, $this->attributes[$attributeSlug]);
+        $key = array_search($optionValue, $this->selectedAttributes[$attributeSlug]);
         if ($key !== false) {
-            unset($this->attributes[$attributeSlug][$key]);
+            unset($this->selectedAttributes[$attributeSlug][$key]);
         } else {
-            $this->attributes[$attributeSlug][] = $optionValue;
+            $this->selectedAttributes[$attributeSlug][] = $optionValue;
         }
 
         // Clean up empty arrays
-        $this->attributes = array_filter($this->attributes);
+        $this->selectedAttributes = array_filter($this->selectedAttributes);
 
         $this->updateFilters();
     }
@@ -136,8 +136,8 @@ class ProductFilters extends Component
             $filters['availability'] = $this->availability;
         }
 
-        if (!empty($this->attributes)) {
-            $filters['attributes'] = $this->attributes;
+        if (!empty($this->selectedAttributes)) {
+            $filters['attributes'] = $this->selectedAttributes;
         }
 
         return $filters;

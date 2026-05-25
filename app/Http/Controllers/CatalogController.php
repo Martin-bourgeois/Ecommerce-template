@@ -18,44 +18,54 @@ class CatalogController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Product::query()->where('status', ProductStatus::ACTIVE);
+        $query = Product::query()
+            ->where('status', ProductStatus::ACTIVE)
+            ->with(['categories', 'ratings']);
 
-        // Filtrer par catégorie
-        if ($request->filled('category')) {
-            $query->whereHas('categories', function ($q) use ($request) {
-                $q->where('slug', $request->get('category'));
-            });
-        }
-
-        // Filtrer par prix
-        if ($request->filled('min_price')) {
-            $query->where('price', '>=', (float) $request->get('min_price'));
-        }
-        if ($request->filled('max_price')) {
-            $query->where('price', '<=', (float) $request->get('max_price'));
-        }
-
-        // Recherche
-        if ($request->filled('search')) {
-            $search = $request->get('search');
+        // Filtre par recherche
+        if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'ilike', "%{$search}%")
-                  ->orWhere('description', 'ilike', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
             });
+        }
+
+        // Filtre par catégorie
+        if ($categorySlug = $request->get('category')) {
+            $query->whereHas('categories', function ($q) use ($categorySlug) {
+                $q->where('slug', $categorySlug);
+            });
+        }
+
+        // Filtre par gamme de prix
+        if ($minPrice = $request->get('min_price')) {
+            $query->where('price', '>=', (int)$minPrice);
+        }
+        if ($maxPrice = $request->get('max_price')) {
+            $query->where('price', '<=', (int)$maxPrice);
         }
 
         // Tri
         $sort = $request->get('sort', 'newest');
-        $query = match ($sort) {
-            'price_asc' => $query->orderBy('price'),
-            'price_desc' => $query->orderByDesc('price'),
-            'popular' => $query->withCount('orderItems as sales_count')->orderByDesc('sales_count'),
-            'rating' => $query->withCount('ratings as avg_rating')->orderByDesc('avg_rating'),
-            default => $query->latest(),
+        match ($sort) {
+            'price_asc' => $query->orderBy('price', 'asc'),
+            'price_desc' => $query->orderBy('price', 'desc'),
+            'popular' => $query->orderBy('view_count', 'desc'),
+            'rating' => $query->leftJoin('product_ratings', 'products.id', '=', 'product_ratings.product_id')
+                ->selectRaw('products.*, AVG(product_ratings.rating) as avg_rating')
+                ->groupBy('products.id')
+                ->orderBy('avg_rating', 'desc'),
+            default => $query->orderBy('created_at', 'desc'), // newest
         };
 
+        // Pagination
         $products = $query->paginate(12);
-        $categories = Category::where('is_active', true)->get();
+
+        // Récupérer les catégories pour le filtre
+        $categories = Category::where('is_active', true)
+            ->withCount('products')
+            ->orderBy('name')
+            ->get();
 
         return view('catalog.index', [
             'products' => $products,

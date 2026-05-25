@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ContactController;
 use App\Livewire\Cart\CartPage;
 use App\Livewire\Checkout\CheckoutForm;
@@ -61,11 +62,14 @@ Route::prefix('contact')->name('contact.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Cart Routes - Authenticated
+| Cart Routes
 |--------------------------------------------------------------------------
 |
-| Shopping cart management - Requires authentication
+| Shopping cart management
 */
+
+Route::post('cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::get('cart/count', [CartController::class, 'get'])->middleware('auth')->name('cart.count');
 
 Route::prefix('cart')->name('cart.')->middleware('auth')->group(function () {
     Route::get('', CartPage::class)->name('index');
