@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use App\Core\AbstractRepository;
+use {{ modelNamespace }}\{{ model }};
+
+final class {{ class }} extends AbstractRepository
+{
+    protected function setModel(): void
+    {
+        $this->model = app({{ model }}::class);
+    }
+
+    /**
+     * Add custom repository methods here
+     */
+}

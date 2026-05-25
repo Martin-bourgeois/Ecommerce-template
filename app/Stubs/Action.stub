@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+/**
+ * {{ class }} - Single responsibility action
+ * 
+ * This action performs one specific business operation.
+ */
+final class {{ class }}
+{
+    /**
+     * Execute the action
+     */
+    public function execute(): mixed
+    {
+        //
+    }
+}

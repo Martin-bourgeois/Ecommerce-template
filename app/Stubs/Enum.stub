@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+enum {{ class }}: string
+{
+    case EXAMPLE_VALUE = 'example_value';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::EXAMPLE_VALUE => 'Example Value',
+        };
+    }
+}

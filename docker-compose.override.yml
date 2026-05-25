@@ -1,0 +1,18 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+# This file is automatically loaded by docker-compose and allows local customizations
+# without modifying the main docker-compose.yml file
+
+services:
+  app:
+    environment:
+      - REDIS_CACHE_DB=0
+    volumes:
+      - ./:/var/www:delegated
+      - /var/www/vendor
+      - /var/www/node_modules
+
+  postgres:
+    environment:
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
